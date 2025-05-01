@@ -47,4 +47,4 @@ lime_html = lime_exp.as_html()
 st.components.v1.html(lime_html, height=400, scrolling=True)
 
 st.markdown("---")
-st.markdown("Powered by ExplainBench | GitHub: [YourRepoLink]")
+st.markdown("Powered by ExplainBench | GitHub: [git@github.com:jamesafful/explainbench.git]")
