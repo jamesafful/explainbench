@@ -10,13 +10,32 @@ from explainbench.lime_wrapper import LIMEExplainer
 st.set_page_config(page_title="ExplainBench Demo", layout="wide")
 st.title("ExplainBench: Interpretable Machine Learning Toolkit")
 
-# Load data
-df = pd.read_csv('../datasets/compas_clean.csv')
-target = 'Two_yr_Recidivism'
-categorical = ['sex', 'race', 'age_cat', 'c_charge_degree']
+# Dataset selection
+dataset_option = st.sidebar.selectbox("Choose Dataset", ("COMPAS", "UCI Adult", "LendingClub"))
 
-# for col in categorical:
-#     df[col] = LabelEncoder().fit_transform(df[col])
+# Load dataset based on selection
+if dataset_option == "COMPAS":
+    df = pd.read_csv('../datasets/compas_clean.csv')
+    target = 'two_year_recid'
+    categorical = ['sex', 'race', 'age_cat', 'c_charge_degree']
+elif dataset_option == "UCI Adult":
+    df = pd.read_csv('../datasets/adult.csv')
+    target = 'income'
+    categorical = ['workclass', 'education', 'marital-status', 'occupation', 'relationship', 'race', 'sex', 'native-country']
+elif dataset_option == "LendingClub":
+    df = pd.read_csv('../datasets/lendingclub_clean.csv')
+    target = 'loan_status'
+    categorical = ['term', 'grade', 'sub_grade', 'home_ownership', 'verification_status', 'purpose', 'addr_state']
+else:
+    st.error("Unknown dataset selected.")
+    st.stop()
+
+# Encode categorical features
+for col in categorical:
+    df[col] = LabelEncoder().fit_transform(df[col])
+
+if df[target].dtype == 'object':
+    df[target] = LabelEncoder().fit_transform(df[target])
 
 X = df.drop(columns=[target])
 y = df[target]
