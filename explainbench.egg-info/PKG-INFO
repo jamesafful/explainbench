@@ -1,0 +1,51 @@
+Metadata-Version: 2.4
+Name: explainbench
+Version: 0.1.1
+Summary: A toolkit for interpretable machine learning and fairness auditing
+Home-page: https://github.com/jamesafful/explainbench
+Author: James Afful
+Author-email: affulj@iastate.edu
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: numpy<1.27,>=1.24
+Requires-Dist: pandas==1.5.3
+Requires-Dist: scikit-learn==1.3.2
+Requires-Dist: matplotlib==3.7.1
+Requires-Dist: shap==0.44.1
+Requires-Dist: lime==0.2.0.1
+Requires-Dist: dice-ml==0.11
+Requires-Dist: streamlit==1.27.2
+Requires-Dist: typing-extensions>=4.5.0
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Explainbench: An Open-Source Toolkit for Interpretable Machine Learning
+
+**Explainbench** is a Python toolkit that makes powerful ML interpretability techniques like SHAP, LIME, counterfactuals, and global surrogate models accessible and usable — especially for high-stakes, public-sector applications.
+
+## Features
+
+- **Unified Interface** for SHAP, LIME, and DiCE
+- **Fairness & Explainability Metrics** (Disparate Impact, Fidelity, Consistency)
+- **Preloaded Datasets** (COMPAS, Adult Income, etc.)
+- **Interactive Visualizations** with Streamlit and Plotly
+- **Notebook Examples** for quick understanding and classroom use
+
+## Why It Matters
+
+As ML systems are increasingly used in criminal justice, healthcare, and finance, it's crucial that we can explain, audit, and challenge their decisions. `Explainbench` provides transparent tools for evaluating black-box models in real-world, socially relevant contexts.
+
+## Installation
+
+```bash
+pip install explainbench
