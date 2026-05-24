@@ -1,0 +1,126 @@
+"""Benchmark runner for tabular local explanations."""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable
+
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+from .datasets import load_dataset
+from .explainers import LinearCoefficientExplainer, OcclusionExplainer
+from .metrics import (
+    deletion_fidelity,
+    fairness_by_binary_group,
+    mean_group_attribution_gap,
+    model_performance,
+    sparsity,
+)
+
+
+@dataclass(frozen=True)
+class BenchmarkConfig:
+    dataset: str = "compas"
+    test_size: float = 0.30
+    random_state: int = 42
+    n_explain: int = 200
+    top_k: int = 3
+
+
+def _models(random_state: int):
+    return {
+        "logistic_regression": make_pipeline(
+            StandardScaler(),
+            LogisticRegression(max_iter=1000, random_state=random_state),
+        ),
+        "random_forest": RandomForestClassifier(
+            n_estimators=200,
+            min_samples_leaf=5,
+            random_state=random_state,
+            n_jobs=-1,
+        ),
+    }
+
+
+def _explain_model(model_name: str, model, X_reference: pd.DataFrame, X_explain: pd.DataFrame) -> dict[str, np.ndarray]:
+    background = X_reference.median(numeric_only=True)
+    explanations = {
+        "occlusion": OcclusionExplainer(model=model, background=background).explain(X_explain),
+    }
+    if model_name == "logistic_regression":
+        # The fitted estimator is the final step of the pipeline; contributions are
+        # computed in standardized space to match the model coefficients.
+        scaler = model.named_steps["standardscaler"]
+        clf = model.named_steps["logisticregression"]
+        X_ref_scaled = pd.DataFrame(scaler.transform(X_reference), columns=X_reference.columns, index=X_reference.index)
+        X_exp_scaled = pd.DataFrame(scaler.transform(X_explain), columns=X_explain.columns, index=X_explain.index)
+        explanations["linear_coefficients"] = LinearCoefficientExplainer(
+            model=clf,
+            background=X_ref_scaled.median(numeric_only=True),
+        ).explain(X_exp_scaled)
+    return explanations
+
+
+def run_benchmark(config: BenchmarkConfig = BenchmarkConfig()) -> pd.DataFrame:
+    """Run a small reproducible benchmark and return one row per model/explainer."""
+    X, y, spec = load_dataset(config.dataset)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X,
+        y,
+        test_size=config.test_size,
+        stratify=y,
+        random_state=config.random_state,
+    )
+    X_explain = X_test.head(config.n_explain).copy()
+    rows: list[dict[str, float | str | int]] = []
+
+    for model_name, model in _models(config.random_state).items():
+        model.fit(X_train, y_train)
+        perf = model_performance(model, X_test, y_test)
+        y_pred = model.predict(X_test)
+
+        fairness_rows = {}
+        for protected in spec.protected_attributes:
+            if protected in X_test.columns:
+                group_metrics = fairness_by_binary_group(y_test, y_pred, X_test[protected])
+                fairness_rows.update({f"{protected}_{k}": v for k, v in group_metrics.items()})
+
+        explanation_sets = _explain_model(model_name, model, X_train, X_explain)
+        background = X_train.median(numeric_only=True)
+        for explainer_name, values in explanation_sets.items():
+            row = {
+                "dataset": config.dataset,
+                "model": model_name,
+                "explainer": explainer_name,
+                "n_train": len(X_train),
+                "n_test": len(X_test),
+                "n_explain": len(X_explain),
+                "random_state": config.random_state,
+                **perf,
+                **fairness_rows,
+                "mean_sparsity": float(np.mean([sparsity(v) for v in values])),
+                f"deletion_fidelity_top{config.top_k}": deletion_fidelity(
+                    model, X_explain, values, background=background, k=config.top_k
+                ),
+            }
+            for protected in spec.protected_attributes:
+                row[f"{protected}_mean_abs_attribution_gap"] = mean_group_attribution_gap(
+                    values, X_explain, group_col=protected
+                )
+            rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def save_benchmark(output: str | Path, config: BenchmarkConfig = BenchmarkConfig()) -> Path:
+    """Run the benchmark and save CSV output."""
+    output = Path(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    df = run_benchmark(config)
+    df.to_csv(output, index=False)
+    return output
