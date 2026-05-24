@@ -1,39 +1,57 @@
-"""Run the initial COMPAS benchmark used to harden ExplainBench.
-
-Usage:
-    python experiments/run_compas_benchmark.py --output results/compas_initial_benchmark.csv
-"""
+"""Run the COMPAS ExplainBench benchmark and save a CSV file."""
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
 
 from explainbench.benchmark import BenchmarkConfig, save_benchmark
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--output", default="results/compas_initial_benchmark.csv")
-    parser.add_argument("--n-explain", type=int, default=200)
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--top-k", type=int, default=3)
-    args = parser.parse_args()
-
-    out = save_benchmark(
-        args.output,
-        BenchmarkConfig(
-            dataset="compas",
-            n_explain=args.n_explain,
-            random_state=args.seed,
-            top_k=args.top_k,
-        ),
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run the COMPAS ExplainBench benchmark.")
+    parser.add_argument(
+        "--output",
+        default="results/compas_initial_benchmark.csv",
+        help="Path to write the benchmark CSV.",
     )
-    print(f"Wrote benchmark results to {Path(out).resolve()}")
+    parser.add_argument(
+        "--n-explain",
+        type=int,
+        default=200,
+        help="Number of held-out test instances to explain.",
+    )
+    parser.add_argument(
+        "--random-state",
+        type=int,
+        default=42,
+        help="Random seed used for train/test split and model training.",
+    )
+    parser.add_argument(
+        "--top-k",
+        type=int,
+        default=3,
+        help="Number of top attribution features used for deletion fidelity.",
+    )
+    parser.add_argument(
+        "--lime-num-samples",
+        type=int,
+        default=5000,
+        help="Number of perturbed samples used by LIME per explained instance.",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+    config = BenchmarkConfig(
+        dataset="compas",
+        random_state=args.random_state,
+        n_explain=args.n_explain,
+        top_k=args.top_k,
+        lime_num_samples=args.lime_num_samples,
+    )
+    output = save_benchmark(Path(args.output), config=config)
+    print(f"Wrote benchmark results to {output.resolve()}")
 
 
 if __name__ == "__main__":
