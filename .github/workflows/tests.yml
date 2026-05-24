@@ -1,0 +1,43 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Upgrade packaging tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "setuptools<70" wheel
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements-dev.txt
+          python -m pip install -e . --no-deps
+
+      - name: Run tests
+        run: |
+          python -m pytest -q
+
+      - name: Syntax-check experiment scripts
+        run: |
+          python -m py_compile \
+            experiments/run_compas_benchmark.py \
+            experiments/run_compas_multiseed.py \
+            experiments/make_compas_tables.py \
+            experiments/make_compas_figures.py
