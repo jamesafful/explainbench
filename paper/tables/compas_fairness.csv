@@ -1,0 +1,8 @@
+dataset,model,explainer,n_seeds,african_american_demographic_parity_difference,african_american_equal_opportunity_difference,african_american_false_positive_rate_difference,african_american_mean_abs_attribution_gap,female_demographic_parity_difference,female_equal_opportunity_difference,female_false_positive_rate_difference,female_mean_abs_attribution_gap
+compas,logistic_regression,lime,5,0.278 ± 0.019,0.280 ± 0.034,0.197 ± 0.012,0.001 ± 0.000,-0.184 ± 0.022,-0.218 ± 0.039,-0.091 ± 0.024,0.000 ± 0.000
+compas,logistic_regression,linear_coefficients,5,0.278 ± 0.019,0.280 ± 0.034,0.197 ± 0.012,0.030 ± 0.014,-0.184 ± 0.022,-0.218 ± 0.039,-0.091 ± 0.024,0.014 ± 0.015
+compas,logistic_regression,occlusion,5,0.278 ± 0.019,0.280 ± 0.034,0.197 ± 0.012,0.007 ± 0.003,-0.184 ± 0.022,-0.218 ± 0.039,-0.091 ± 0.024,0.003 ± 0.003
+compas,logistic_regression,shap_linear,5,0.278 ± 0.019,0.280 ± 0.034,0.197 ± 0.012,0.008 ± 0.010,-0.184 ± 0.022,-0.218 ± 0.039,-0.091 ± 0.024,0.008 ± 0.010
+compas,random_forest,lime,5,0.273 ± 0.021,0.249 ± 0.030,0.210 ± 0.036,0.001 ± 0.000,-0.188 ± 0.017,-0.157 ± 0.034,-0.132 ± 0.020,0.000 ± 0.000
+compas,random_forest,occlusion,5,0.273 ± 0.021,0.249 ± 0.030,0.210 ± 0.036,0.004 ± 0.002,-0.188 ± 0.017,-0.157 ± 0.034,-0.132 ± 0.020,0.006 ± 0.003
+compas,random_forest,shap_tree,5,0.273 ± 0.021,0.249 ± 0.030,0.210 ± 0.036,0.004 ± 0.001,-0.188 ± 0.017,-0.157 ± 0.034,-0.132 ± 0.020,0.000 ± 0.000
