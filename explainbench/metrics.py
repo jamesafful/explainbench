@@ -157,3 +157,56 @@ def mean_group_attribution_gap(
     if len(priv) == 0 or len(unpriv) == 0:
         return float("nan")
     return float(np.mean(np.abs(unpriv)) - np.mean(np.abs(priv)))
+
+
+def attribution_stability(
+    original_explanations: np.ndarray,
+    perturbed_explanations: np.ndarray,
+    k: int = 3,
+) -> dict[str, float]:
+    """Compare original and perturbed explanation vectors.
+
+    The benchmark reports two complementary stability diagnostics:
+
+    1. Top-k Jaccard stability:
+       Whether the same top-k absolute-attribution features remain important.
+
+    2. Cosine stability:
+       Whether the full attribution vectors point in a similar direction.
+
+    Larger values indicate more stable explanations.
+    """
+    original = np.asarray(original_explanations, dtype=float)
+    perturbed = np.asarray(perturbed_explanations, dtype=float)
+
+    if original.shape != perturbed.shape:
+        raise ValueError(
+            f"Explanation shape mismatch: original={original.shape}, perturbed={perturbed.shape}"
+        )
+
+    if original.ndim != 2:
+        raise ValueError(f"Expected 2D explanation arrays, got shape {original.shape}")
+
+    if original.shape[0] == 0:
+        return {
+            f"stability_top{k}_jaccard_mean": float("nan"),
+            f"stability_top{k}_jaccard_std": float("nan"),
+            "stability_cosine_mean": float("nan"),
+            "stability_cosine_std": float("nan"),
+        }
+
+    jaccards = np.array(
+        [jaccard_top_k(a, b, k=k) for a, b in zip(original, perturbed)],
+        dtype=float,
+    )
+    cosines = np.array(
+        [cosine_similarity(a, b) for a, b in zip(original, perturbed)],
+        dtype=float,
+    )
+
+    return {
+        f"stability_top{k}_jaccard_mean": float(np.nanmean(jaccards)),
+        f"stability_top{k}_jaccard_std": float(np.nanstd(jaccards)),
+        "stability_cosine_mean": float(np.nanmean(cosines)),
+        "stability_cosine_std": float(np.nanstd(cosines)),
+    }
