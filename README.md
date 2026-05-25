@@ -1,5 +1,32 @@
 # ExplainBench
 
+<!-- EXPLAINBENCH_ARTIFACT_STATUS_START -->
+## Current reproducible artifact status
+
+ExplainBench currently provides a reproducible COMPAS benchmark artifact for fairness-critical tabular classification.
+
+Implemented and reproducible:
+
+- COMPAS attribution benchmarking with occlusion, LIME, linear coefficients, SHAP Linear, and SHAP Tree explainers
+- COMPAS perturbation-stability evaluation
+- COMPAS multi-seed benchmark summaries
+- COMPAS DiCE counterfactual benchmarking
+- paper-ready result tables
+- paper-ready result figures
+- benchmark, metric, dataset, counterfactual, and reproducibility documentation
+- automated GitHub Actions tests
+
+Current empirical scope:
+
+- `COMPAS`: implemented and reproducible
+- `Adult Income`: planned, not yet included in reproducible benchmark outputs
+- `LendingClub`: planned, not yet included in reproducible benchmark outputs
+
+See `ARTIFACT.md` for reviewer-oriented reproduction instructions.
+
+<!-- EXPLAINBENCH_ARTIFACT_STATUS_END -->
+
+
 **ExplainBench** is an open-source toolkit for reproducible evaluation of local explanation methods in fairness-sensitive tabular machine-learning workflows.
 
 The current artifact is an early benchmark implementation. It includes a cleaned COMPAS dataset, SHAP/LIME wrappers, a Streamlit demo, and the first reproducible benchmark runner for model performance, group fairness, and local explanation diagnostics.

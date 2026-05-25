@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use ExplainBench in your research, please cite this software and the associated paper."
+title: "ExplainBench: A Benchmark Framework for Local Model Explanations in Fairness-Critical Applications"
+type: software
+authors:
+  - family-names: Afful
+    given-names: James
+repository-code: "https://github.com/jamesafful/explainbench"
+url: "https://github.com/jamesafful/explainbench"
+abstract: "ExplainBench is a reproducible benchmark framework for evaluating attribution and counterfactual explanations in fairness-critical tabular classification settings. The current reproducible artifact includes a COMPAS benchmark with attribution explainers, DiCE counterfactual explanations, multi-seed summaries, paper-ready tables, paper-ready figures, documentation, and automated tests."
+keywords:
+  - explainable artificial intelligence
+  - XAI
+  - fairness
+  - benchmark
+  - counterfactual explanations
+  - SHAP
+  - LIME
+  - DiCE
+  - COMPAS
+license: MIT
+date-released: 2026-05-24
