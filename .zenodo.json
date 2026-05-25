@@ -1,0 +1,30 @@
+{
+  "title": "ExplainBench: A Benchmark Framework for Local Model Explanations in Fairness-Critical Applications",
+  "upload_type": "software",
+  "description": "ExplainBench is a reproducible benchmark framework for evaluating attribution and counterfactual explanations in fairness-critical tabular classification settings. The current reproducible artifact includes a COMPAS benchmark with attribution explainers, DiCE counterfactual explanations, multi-seed summaries, paper-ready tables, paper-ready figures, documentation, and automated tests.",
+  "creators": [
+    {
+      "name": "Afful, James"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "explainable artificial intelligence",
+    "XAI",
+    "fairness",
+    "benchmark",
+    "counterfactual explanations",
+    "SHAP",
+    "LIME",
+    "DiCE",
+    "COMPAS"
+  ],
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/jamesafful/explainbench",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
